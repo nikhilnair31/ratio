@@ -1,11 +1,12 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useEffect} from 'react';
 import { Pressable, StyleSheet, View, KeyboardAvoidingView } from 'react-native';
 import { Button, Text, Input, Image } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth, githubProvider } from '../helpers/firebase';
 import signInWithGitHub from '../helpers/github';
 import firebase from 'firebase/compat/app';
-import { signInWithPopup, GithubAuthProvider } from 'firebase/auth';
+import 'firebase/compat/auth';
+import { GithubAuthProvider } from 'firebase/auth';
 import 'firebase/compat/firestore';
 
 const github = { id: '3f69d11b0a1b3b70c654', secret: '01eff770156512ddf124b8912479e267145970c6', };
@@ -13,7 +14,7 @@ const githubFields = [ 'user', 'public_repo' ];
 const auth0Domain = `https://github.com/login/oauth/`;
 
 const LoginPage = ({navigation}) => {
-    const [tokenstate, settokenState] = useState(null);
+    const [userName, setUserName] = useState('');
     
     async function getGithubUserInfo (twitchToken) {  
         console.log('twitchToken: ', twitchToken);    
@@ -49,25 +50,40 @@ const LoginPage = ({navigation}) => {
                     return;
                 }
             }
-            settokenState(token);
             console.log('tokey: ', token);
 
             const credential = GithubAuthProvider.credential(token);
             console.log('credential: ', credential);
             const userCredential = await firebase.auth().signInWithCredential(credential);
-            console.log('userCredential: ', userCredential);
-            return userCredential;
+            console.log('userCredential.additionalUserInfo.profile.name: ', userCredential.additionalUserInfo.profile.name);
+            setUserName( userCredential.additionalUserInfo.profile.name );
+            await AsyncStorage.setItem('@expo:user', userCredential.additionalUserInfo.profile.name);
+            gotohome( userCredential.additionalUserInfo.profile.name );
         } 
         catch ({ message }) {
             console.warn('message: ', message);
         }
     }
-
-    const gotohome = () => {
-        // Use replace instead to remove the go back arrow
-        navigation.replace('HomePage')
+    async function getUsernameData () {
+        try {
+            const value = await AsyncStorage.getItem('@expo:username');
+            if (value !== null) gotohome(value);
+        } catch (error) {
+            // Error retrieving data
+        }
     }
 
+    const gotohome = (savedusername) => {
+        // Use replace instead to remove the go back arrow
+        navigation.replace('HomePage', {
+            screen: 'Home',
+            params: { savedusername: savedusername, },
+          })
+    }
+
+    useEffect(() => {
+        getUsernameData();
+    }, [userName]);
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -99,12 +115,6 @@ const LoginPage = ({navigation}) => {
             <Pressable style={styles.button} onPress={()=>githubSignIn()}>
                 <Text style={styles.text}>Github Login</Text>
             </Pressable>
-            {
-                tokenstate && 
-                <Pressable style={styles.button} onPress={gotohome}>
-                    <Text style={styles.text}>Home</Text>
-                </Pressable>
-            }
         </KeyboardAvoidingView>
     );
 }

@@ -5,10 +5,11 @@ import { db, fdb } from "../helpers/firebase";
 import { ref, onValue, child } from 'firebase/database';
 import CustomListItem from '../components/CustomListItem.js';
 
-const HomePage = ({navigation}) => {
+const HomePage = ({route, navigation}) => {
     const [posts, setPosts] = useState([]);
     const [postsLoading, setpostsLoading] = useState(false);
     const [refreshing, setRefreshing] = React.useState(false);
+    const { savedusername } = route.params;
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -54,9 +55,10 @@ const HomePage = ({navigation}) => {
         }
     }, [refreshing, postsLoading]);
     useLayoutEffect(() => {
+        console.log('savedusername: ', JSON.stringify(savedusername));
         const stackNavigator = navigation.getParent();
         stackNavigator.setOptions({
-            title: 'home',
+            title: 'hey '+JSON.stringify(savedusername).split(" ")[0].replace(/["']/g, ""),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: 'black',

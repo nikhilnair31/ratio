@@ -6,6 +6,7 @@
 import firebase from 'firebase/compat/app';
 import { getAuth, GithubAuthProvider } from 'firebase/auth';
 import 'firebase/compat/firestore';
+import 'firebase/compat/database';
 
 var firebaseConfig = {
     apiKey: "AIzaSyDeHyeqvHV_zypBrH1xglk84uTa820RhLg",
@@ -25,6 +26,7 @@ if (firebase.apps.length === 0) {
 else {
     app = firebase.app();
 }
+export const db = app.database();
 export const auth = getAuth();
 export const githubProvider = new GithubAuthProvider();
 
