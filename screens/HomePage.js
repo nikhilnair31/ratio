@@ -58,7 +58,7 @@ const HomePage = ({route, navigation}) => {
         console.log('savedusername: ', JSON.stringify(savedusername));
         const stackNavigator = navigation.getParent();
         stackNavigator.setOptions({
-            title: 'hey '+JSON.stringify(savedusername).split(" ")[0].replace(/["']/g, ""),
+            title: 'hey '+JSON.stringify(savedusername).split(" ")[0].replace(/["']/g, "").toLowerCase(),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: 'black',

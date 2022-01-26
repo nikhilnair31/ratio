@@ -6,11 +6,16 @@
     - [ ] Add ability to open a specific post
     - [ ] Add lazy loading for posts up to limit, then load more as user scrolls
 * Profile
-    - [ ] Get user authentication working (Google auth else email?)
+    - [x] Get user authentication working (Google auth else email?)
+        - [ ] Check for user credentials in localstorage and if exists then send to homescreen ASAP
+        - [ ] Figure out how to avoid going to Github's OAuth screen every time user tries to login
+        - [ ] Include Google sign in
+    - [ ] Add sign out button in profile page
+        - [ ] Also include the autheticated user's prodile picture
     - [ ] Add a system for keeping track of how many times a user's been ratio'd.
     - [ ] Once ratio limit hit then perma-ban account
     - [ ] Add screen for perma banned users trying to relogin
 * Search
-    - [ ] Do we need this tab?
+    - [ ] Improve this to make it useful
 * Other
     - [ ] Improvements?
