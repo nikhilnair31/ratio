@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "370585798414",
+    "firebase_url": "https://ratio22122-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "ratio22122",
+    "storage_bucket": "ratio22122.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370585798414:android:e46435f27f883bca69b95f",
+        "android_client_info": {
+          "package_name": "com.sil.ratio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370585798414-400ami1faes0pnvpnk8o84g9es60jkjg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sil.ratio",
+            "certificate_hash": "f15645ef22ec3a877e2661df81fb1a66af6236e1"
+          }
+        },
+        {
+          "client_id": "370585798414-9lrin94oo2tqarq493ohsi37p2t81mc6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDelPjgcekTWWiyU7wFdNLtHMjdIu2IpNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370585798414-9lrin94oo2tqarq493ohsi37p2t81mc6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

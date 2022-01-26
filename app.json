@@ -6,27 +6,34 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+        "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+        "**/*"
     ],
+    "scheme": "com.sil.ratio",
     "ios": {
-      "supportsTablet": true
+        "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+        "package": "com.sil.ratio",
+        "versionCode": 1,
+        "googleServicesFile": "./google-services.json",
+        "adaptiveIcon": {
+            "foregroundImage": "./assets/adaptive-icon.png",
+            "backgroundColor": "#FFFFFF"
+        }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+        "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+    ]
   }
 }

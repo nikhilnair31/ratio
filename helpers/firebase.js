@@ -1,8 +1,8 @@
+import { getAuth } from "firebase/auth";
 import firebase from "firebase/compat/app";
-import { initializeApp } from 'firebase/app';
-import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getDatabase } from "firebase/database";
+import auth from '@react-native-firebase/auth';
 
 var firebaseConfig = {
     apiKey: "AIzaSyDeHyeqvHV_zypBrH1xglk84uTa820RhLg",
@@ -19,9 +19,9 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig)
 }
 
-// const app = initializeApp(firebaseConfig);
+export const fdb = getFirestore();
 export const db = getDatabase();
-// export const fdb = getFirestore(app);
-// export const auth = getAuth(app);
 
-// export const googleProvider = new GoogleAuthProvider();
+// export const authf = firebase.auth();
+export const googleProvider = auth.GoogleAuthProvider;
+export const githubProvider = auth.GithubAuthProvider;

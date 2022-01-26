@@ -5,13 +5,15 @@ import { View } from 'react-native';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoginPage from './screens/LoginPage.js';
 import HomePage from './screens/HomePage.js';
-import PostPage from './screens/PostPage.js';
-import NewPostPage from './screens/NewPostPage.js';
 import ProfilePage from './screens/ProfilePage.js';
 import SearchPage from './screens/SearchPage.js';
+import NewPostPage from './screens/NewPostPage.js';
+import PostPage from './screens/PostPage.js';
+import { LogBox } from 'react-native';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+LogBox.ignoreLogs(['Asyncstorage: ...']);
 
 function HomeTabs() {
     return (
