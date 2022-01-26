@@ -1,8 +1,11 @@
-import { getAuth } from "firebase/auth";
-import firebase from "firebase/compat/app";
-import { getFirestore } from "firebase/firestore";
-import { getDatabase } from "firebase/database";
-import auth from '@react-native-firebase/auth';
+// import { getAuth } from "firebase/auth";
+// import { getFirestore } from "firebase/firestore";
+// import { getDatabase } from "firebase/database";
+// import { GithubAuthProvider } from 'firebase/auth';
+// import auth from '@react-native-firebase/auth';
+import firebase from 'firebase/compat/app';
+import { getAuth, GithubAuthProvider } from 'firebase/auth';
+import 'firebase/compat/firestore';
 
 var firebaseConfig = {
     apiKey: "AIzaSyDeHyeqvHV_zypBrH1xglk84uTa820RhLg",
@@ -15,13 +18,24 @@ var firebaseConfig = {
     measurementId: "G-CE5W58SRYH",
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig)
+export let app;
+if (firebase.apps.length === 0) {
+    app = firebase.initializeApp(firebaseConfig)
+} 
+else {
+    app = firebase.app();
 }
+export const auth = getAuth();
+export const githubProvider = new GithubAuthProvider();
 
-export const fdb = getFirestore();
-export const db = getDatabase();
+// if (!firebase.apps.length) {
+//     firebase.initializeApp(firebaseConfig);
+// }
 
-// export const authf = firebase.auth();
-export const googleProvider = auth.GoogleAuthProvider;
-export const githubProvider = auth.GithubAuthProvider;
+// export const fdb = getFirestore();
+// export const db = getDatabase();
+
+// export const googleProvider = auth.GoogleAuthProvider;
+// export const githubProvider = new GithubAuthProvider();
+
+// export const githubProvider = auth.GithubAuthProvider;

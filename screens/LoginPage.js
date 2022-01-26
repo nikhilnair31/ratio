@@ -2,21 +2,17 @@ import React, {useState, useLayoutEffect} from 'react';
 import { Pressable, StyleSheet, View, KeyboardAvoidingView } from 'react-native';
 import { Button, Text, Input, Image } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth, githubProvider } from '../helpers/firebase';
 import signInWithGitHub from '../helpers/github';
-import { githubProvider } from "../helpers/firebase";
-import { firebase, authf } from "firebase/compat/app";
-import auth from '@react-native-firebase/auth';
+import firebase from 'firebase/compat/app';
+import { signInWithPopup, GithubAuthProvider } from 'firebase/auth';
+import 'firebase/compat/firestore';
 
 const github = { id: '3f69d11b0a1b3b70c654', secret: '01eff770156512ddf124b8912479e267145970c6', };
 const githubFields = [ 'user', 'public_repo' ];
 const auth0Domain = `https://github.com/login/oauth/`;
 
 const LoginPage = ({navigation}) => {
-    // const [confirm, setConfirm] = useState(null);
-    // const [phonenumber, setPhonenumber] = useState('');
-    // const [code, setCode] = useState('');
-    // const [email, setEmail] = useState('');
-    // const [password, setPassword] = useState('');
     const [tokenstate, settokenState] = useState(null);
     
     async function getGithubUserInfo (twitchToken) {  
@@ -45,19 +41,20 @@ const LoginPage = ({navigation}) => {
             if (!token) {
                 const token = await signInWithGitHub(auth0Domain, github, githubFields);
                 const person = await getGithubUserInfo(token);
+                console.log('token: ',token,'\nperson: ',person);
                 if (token) {
                     await AsyncStorage.setItem('@expo:GithubToken', token);
                     return githubSignIn(token);
                 } else {
-                    console.log('no token');
                     return;
                 }
             }
             settokenState(token);
             console.log('tokey: ', token);
-            const credential = githubProvider.credential(token);
+
+            const credential = GithubAuthProvider.credential(token);
             console.log('credential: ', credential);
-            const userCredential = await auth().signInWithCredential(credential);
+            const userCredential = await firebase.auth().signInWithCredential(credential);
             console.log('userCredential: ', userCredential);
             return userCredential;
         } 
@@ -65,17 +62,6 @@ const LoginPage = ({navigation}) => {
             console.warn('message: ', message);
         }
     }
-    // async function signInWithPhoneNumber() {
-    //     const confirmation = await auth().signInWithPhoneNumber(phonenumber);
-    //     setConfirm(confirmation);
-    // }
-    // async function confirmCode() {
-    //     try {
-    //         await confirm.confirm(code);
-    //     } catch (error) {
-    //         console.log('Invalid code.');
-    //     }
-    // }
 
     const gotohome = () => {
         // Use replace instead to remove the go back arrow
