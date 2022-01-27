@@ -9,7 +9,7 @@ const HomePage = ({route, navigation}) => {
     const [posts, setPosts] = useState([]);
     const [postsLoading, setpostsLoading] = useState(false);
     const [refreshing, setRefreshing] = React.useState(false);
-    const { savedusername } = route.params;
+    const { dispname } = route.params;
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -22,9 +22,6 @@ const HomePage = ({route, navigation}) => {
     const makeNewPost = () => {
         navigation.push('NewPostPage')
     }
-    const goToProfileTab = () => {
-        navigation.navigate('ProfilePage')
-    }
 
     useEffect(() => { 
         console.log('useEffect');
@@ -36,18 +33,18 @@ const HomePage = ({route, navigation}) => {
                 let dataArr = [];
                 const data = snapshot.val();
                 if(data !== null) {
-                    console.log('data: ', data);
+                    // console.log('data: ', data);
                     let dataValArr = Object.values(data)
                     let dataKeyArr = Object.keys(data)
                     for(var i=0; i<dataKeyArr.length; i++) {
                         dataArr.push({ id: dataKeyArr[i], item: dataValArr[i] })
                         lastKey = dataValArr[i].utc;
                     }
-                    console.log('dataKeyArr: ', dataKeyArr);
-                    console.log('dataValArr: ', dataValArr);
-                    console.log('dataArr: ', dataArr);
+                    // console.log('dataKeyArr: ', dataKeyArr);
+                    // console.log('dataValArr: ', dataValArr);
+                    // console.log('dataArr: ', dataArr);
                     dataArr.sort((a, b) => b.item.utc - a.item.utc)
-                    console.log('dataArr: ', dataArr);
+                    // console.log('dataArr: ', dataArr);
                     setPosts(dataArr);
                     setpostsLoading(true);
                 }
@@ -55,10 +52,10 @@ const HomePage = ({route, navigation}) => {
         }
     }, [refreshing, postsLoading]);
     useLayoutEffect(() => {
-        console.log('savedusername: ', JSON.stringify(savedusername));
+        console.log('dispname: ', JSON.stringify(dispname));
         const stackNavigator = navigation.getParent();
         stackNavigator.setOptions({
-            title: 'hey '+JSON.stringify(savedusername).split(" ")[0].replace(/["']/g, "").toLowerCase(),
+            title: 'hey '+JSON.stringify(dispname).split(" ")[0].replace(/["']/g, "").toLowerCase(),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: 'black',
@@ -75,14 +72,19 @@ const HomePage = ({route, navigation}) => {
         });
     }, [navigation]);
 
-    return (
-        <View style={styles.container}>
-            {   
-                posts.length <= 0 &&
+    if(posts.length <= 0) {
+        return (
+            <View style={styles.waitcontainer}>
                 <Text style={styles.waitText}>Wait ✋</Text>
-            }
-            {
-                posts.length > 0 &&
+                <Pressable style={styles.newpostbutton} onPress={makeNewPost}>
+                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='black'></Image>
+                </Pressable>
+            </View>
+        );
+    }
+    else if(posts.length > 0) {
+        return (
+            <View style={styles.maincontainer}>
                 <ScrollView contentContainerStyle={styles.scrollView} style={styles.scrollContainer} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> } >
                     {   
                         posts.map(({id, item}) => 
@@ -90,21 +92,28 @@ const HomePage = ({route, navigation}) => {
                         )
                     }
                 </ScrollView>
-            }
-
-            <Pressable style={styles.newpostbutton} onPress={makeNewPost}>
-                <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='black'></Image>
-            </Pressable>
-        </View>
-    );
+                <Pressable style={styles.newpostbutton} onPress={makeNewPost}>
+                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='black'></Image>
+                </Pressable>
+            </View>
+        );
+    }
 }
 
 export default HomePage
 
 const styles = StyleSheet.create({
-    container: {
+    maincontainer: {
         backgroundColor: 'black', 
         height: '100%',
+    },
+    waitcontainer: {
+        flex: 1,
+        display: 'flex',
+        backgroundColor: 'black', 
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     homeAvatarIcon: {
         width: 40, 
@@ -119,9 +128,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
     },
     waitText: {
-        flex: 1,
-        justifyContent: 'center',
-        alignContent: 'center',
         backgroundColor: 'black',
         color: 'white',
         fontSize: 20

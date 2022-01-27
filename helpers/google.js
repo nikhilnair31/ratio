@@ -18,19 +18,19 @@ async function createTokenWithCode(clientIdSecret, code) {
     });
     return res.json();
 }
-const signInWithGitHub = async (authDomain, clientIdSecret, githubScopeFields) => {
+const signInWithGoogle = async (authDomain, clientIdSecret, googleScopeFields) => {
     const authUrl = `${authDomain}/authorize` +
         `?client_id=${clientIdSecret.id}` +
         `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
-        `&scope=${encodeURIComponent(githubScopeFields.join(' '))}`
+        `&scope=${encodeURIComponent(googleScopeFields.join(' '))}`
     const {type, params} = await AuthSession.startAsync({authUrl});
-    console.log('signInWithGitHub: A: ', { type, params });
+    console.log('signInWithGoogle: A: ', { type, params });
 
     if (type === 'success') {
         const { token_type, scope, access_token } = await createTokenWithCode(clientIdSecret, params.code);
-        console.log('signInWithGitHub: B: ', { token_type, scope, access_token, });
+        console.log('signInWithGoogle: B: ', { token_type, scope, access_token, });
         return access_token;
     }
 };
 
-export default signInWithGitHub;
+export default signInWithGoogle;

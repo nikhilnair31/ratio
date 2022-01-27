@@ -1,8 +1,3 @@
-// import { getAuth } from "firebase/auth";
-// import { getFirestore } from "firebase/firestore";
-// import { getDatabase } from "firebase/database";
-// import { GithubAuthProvider } from 'firebase/auth';
-// import auth from '@react-native-firebase/auth';
 import firebase from 'firebase/compat/app';
 import { getAuth, GithubAuthProvider } from 'firebase/auth';
 import 'firebase/compat/firestore';
@@ -29,15 +24,3 @@ else {
 export const db = app.database();
 export const auth = getAuth();
 export const githubProvider = new GithubAuthProvider();
-
-// if (!firebase.apps.length) {
-//     firebase.initializeApp(firebaseConfig);
-// }
-
-// export const fdb = getFirestore();
-// export const db = getDatabase();
-
-// export const googleProvider = auth.GoogleAuthProvider;
-// export const githubProvider = new GithubAuthProvider();
-
-// export const githubProvider = auth.GithubAuthProvider;
