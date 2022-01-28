@@ -5,12 +5,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LogBox, StyleSheet, View } from 'react-native';
 import React, {useState} from 'react';
+import SplashScreen from './screens/SplashScreen.js';
 import LoginPage from './screens/LoginPage.js';
 import HomePage from './screens/HomePage.js';
 import ProfilePage from './screens/ProfilePage.js';
 import SearchPage from './screens/SearchPage.js';
 import NewPostPage from './screens/NewPostPage.js';
-import PostPage from './screens/PostPage.js';
+import IndivPostPage from './screens/IndivPostPage.js';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -18,9 +19,9 @@ const Stack = createNativeStackNavigator();
 function HomeTabs() {
     return (
         <Tab.Navigator labeled={false} barStyle={{ backgroundColor: 'black' }} activeColor="white" >
-            <Tab.Screen name="Home" component={HomePage} options={{tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="home" color={color} size={25}/>),}}/>
-            <Tab.Screen name="Search" component={SearchPage} options={{tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="magnify" color={color} size={25}/>),}}/>
-            <Tab.Screen name="Profile" component={ProfilePage} options={{tabBarIcon: ({ color, size }) => (<MaterialCommunityIcons name="account-circle" color={color} size={25}/>),}}/>
+            <Tab.Screen name="Home" component={HomePage} options={{tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="home" color={color} size={25}/>),}}/>
+            <Tab.Screen name="Search" component={SearchPage} options={{tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="magnify" color={color} size={25}/>),}}/>
+            <Tab.Screen name="Profile" component={ProfilePage} options={{tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="account-circle" color={color} size={25}/>),}}/>
         </Tab.Navigator>
     );
 }
@@ -65,10 +66,12 @@ const App = () => {
     return (
         <View style={styles.container}>
             <NavigationContainer >
-                <Stack.Navigator initialRouteName='Login'>
+                <Stack.Navigator initialRouteName='SplashScreen' >
+                    <Stack.Screen name="SplashScreen" component={SplashScreen} />
                     <Stack.Screen name="Login" component={LoginPage} />
                     <Stack.Screen name="HomePage" component={HomeTabs} options={({ route }) => getHeaderTitle(route)}/>
                     <Stack.Screen name="NewPostPage" component={NewPostPage} />
+                    <Stack.Screen name="IndivPostPage" component={IndivPostPage} />
                     <Stack.Screen name="ProfilePage" component={ProfilePage} /> 
                 </Stack.Navigator>
             </NavigationContainer>

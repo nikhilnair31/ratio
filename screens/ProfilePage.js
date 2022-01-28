@@ -42,12 +42,6 @@ const ProfilePage = ({navigation}) => {
             if(saveddisplayName != null || saveddisplayName != undefined) setDisplayName(saveddisplayName);
         });
     }, []);
-    // useLayoutEffect(() => {
-    //     const stackNavigator = navigation.getParent();
-    //     stackNavigator.setOptions({
-    //         title: 'profile',
-    //     });
-    // }, [navigation]);
     
     return (
         <KeyboardAvoidingView behaviour='padding' enabled style={styles.container}>

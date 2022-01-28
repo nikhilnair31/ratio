@@ -1,11 +1,11 @@
 import React, {useLayoutEffect, useEffect} from 'react';
-import { Pressable, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import localStorage from '../helpers/localStorage';
 import githubSignIn from '../helpers/github';
 
-const LoginPage = ({navigation}) => {
-    
+const SplashScreen = ({navigation}) => {
+
     useEffect(() => {
         localStorage.getLocalData('@expo:GithubToken')
         .then( savedtoken =>{
@@ -14,7 +14,7 @@ const LoginPage = ({navigation}) => {
                 githubSignIn(savedtoken, navigation);
             }
             else{
-                localStorage.wait(5000).then(() => {
+                localStorage.wait(2000).then(() => {
                     navigation.replace('Login');
                 });
             }
@@ -27,16 +27,13 @@ const LoginPage = ({navigation}) => {
     }, [navigation]);
 
     return (
-        <KeyboardAvoidingView behaviour='padding' enabled style={styles.container}>
+        <View behaviour='padding' enabled style={styles.container}>
             <Image source={require('../assets/AssMark2.png')} style={styles.logo} tintColor='#c23a5c'></Image>
             <Text h2 style={styles.titleText}>ratio:</Text>
-            <Pressable style={styles.button} onPress={()=>githubSignIn()}>
-                <Text style={styles.text}>Github Login</Text>
-            </Pressable>
-        </KeyboardAvoidingView>
+        </View>
     );
 }
-export default LoginPage
+export default SplashScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -57,29 +54,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         color: 'white',
         fontSize: 30,
-    },
-    inputContainer: {
-        width: 250,
-        margin:5,
-        alignItems: 'center',
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10,
-        margin: 5,
-        borderRadius: 5,
-        backgroundColor: 'transparent',
-        borderColor: '#c23a5c', 
-        borderWidth: 3,
-    },
-    text: {
-        fontSize: 12,
-        lineHeight: 25,
-        width: 70,
-        textAlign: 'center',
-        // fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: 'white',
     },
 });

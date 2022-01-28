@@ -22,6 +22,21 @@ const HomePage = ({route, navigation}) => {
     const makeNewPost = () => {
         navigation.push('NewPostPage')
     }
+    const seeIndivPost = (postid, posttext, postdisplayname, postutc) => {
+        console.log('seeIndivPost postid: ', postid);
+        console.log('seeIndivPostposttext: ', posttext);
+        console.log('seeIndivPostpostdisplayname: ', postdisplayname);
+        console.log('seeIndivPostpostutc: ', postutc);
+        navigation.push('IndivPostPage', {
+            screen: 'IndivPostPage',
+            params: { 
+                postid: postid, 
+                posttext: posttext, 
+                postdisplayname: postdisplayname, 
+                postutc: postutc, 
+            },
+        })
+    }
 
     useEffect(() => { 
         console.log('posts.length: ', posts.length, '- postsLoading: ', postsLoading);
@@ -51,10 +66,8 @@ const HomePage = ({route, navigation}) => {
         }
     }, [refreshing, postsLoading]);
     useLayoutEffect(() => {
-        // console.log('saveddispname: ', JSON.stringify(saveddispname));
         const stackNavigator = navigation.getParent();
         stackNavigator.setOptions({
-            // title: 'hey '+JSON.stringify(saveddispname).split(" ")[0].replace(/["']/g, "").toLowerCase(),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: 'black',
@@ -78,12 +91,12 @@ const HomePage = ({route, navigation}) => {
                 <ScrollView contentContainerStyle={styles.scrollView} style={styles.scrollContainer} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> } >
                     {   
                         posts.map(({id, item}) => 
-                            <CustomListItem key={id} id={id} item={item} />
+                            <CustomListItem key={id} id={id} item={item} seeIndivPost={seeIndivPost}/>
                         )
                     }
                 </ScrollView>
                 <Pressable style={styles.newpostbutton} onPress={makeNewPost}>
-                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='black'></Image>
+                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='#c23a5c'></Image>
                 </Pressable>
             </View>
         );

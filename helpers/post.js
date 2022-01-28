@@ -1,6 +1,6 @@
-import { db, fdb } from "./firebase";
-import { getDatabase, ref, onValue, set, push, update, child, get } from 'firebase/database';
-// import dayjs from "dayjs";
+import { db } from "./firebase";
+import { getDatabase, ref, onValue, set, setValue, push, update, child, get } from 'firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default {
     GetPosts: async () => {
@@ -28,15 +28,22 @@ export default {
             console.log(e);
         }
     },
-    PushPost: async (userid, posttext) => {
+    PushPost: async (posttext) => {
         try {
-            const reference = ref(db, 'post/');
-            push(reference, {
-                userid: userid,
+            const saveduserid = await AsyncStorage.getItem('@expo:uid');
+            const saveddisplayname = await AsyncStorage.getItem('@expo:displayName');
+            const pushref = ref(db, 'post/');
+            push(pushref, {
+                userid: saveduserid,
+                displayname: saveddisplayname,
                 posttext: posttext,
                 utc: Date.now(),
-                comments: {},
-                likes: 0,
+                comments: {
+                    amount: 0
+                },
+                likes: {
+                    amount: 0
+                },
             });
             return true;
         } 
@@ -45,15 +52,48 @@ export default {
             return false;
         }
     },
-    Likepost: (id, newlike) => {
+    Likepost: async (postid, newlikeamount) => {
         try {
-            const reference = ref(db, 'post/'+id);
-            update(reference, {
-                likes: newlike,
+            const saveduserid = await AsyncStorage.getItem('@expo:uid');
+            console.log('likePost saveduserid: ', saveduserid);
+            update( ref(db, 'post/'+postid) , {
+                likes: {
+                    amount: newlikeamount,
+                },
+            });
+        
+            const postref = ref(db, 'post/'+postid+'/likes/userids');
+            push(postref, {
+                userid: saveduserid,
             });
         } 
         catch (e) {
             console.log(e);
         }
-    }
+    },
+    UserIdsThatLikedThePost: async (postid) => {
+        try {
+            const saveduserid = await AsyncStorage.getItem('@expo:uid');
+            let useridsthatlikedthepost = []
+            const dbRef = ref(db);
+            onValue(child(dbRef, `post/`+postid+'/likes/userids/'), (snapshot) => {
+                let snapval = snapshot.val();
+                console.log('snapval: ', snapval);
+                let arrayofobj = snapval!==null ? Object.values(snapval) : null;
+                console.log('arrayofobj: ', arrayofobj);
+                useridsthatlikedthepost = arrayofobj!==null ? arrayofobj.map(function (el) { return el.userid; }) : null;
+                console.log('useridsthatlikedthepost: ', useridsthatlikedthepost);
+                return useridsthatlikedthepost;
+            });
+            const found = useridsthatlikedthepost!==null ? useridsthatlikedthepost.find(element => element === saveduserid) : undefined;
+            if(found!==undefined){
+                console.log('found: ', found);
+                return true;
+            }
+            else false;
+        } 
+        catch (e) {
+            console.log(e);
+        }
+    },
 };

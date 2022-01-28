@@ -3,20 +3,14 @@ import { StyleSheet, TextInput, View, KeyboardAvoidingView, Pressable } from 're
 import { Text, Input, Image } from 'react-native-elements';
 import { db } from "../helpers/firebase";
 import { ref, push } from 'firebase/database';
+import Post from "../helpers/post.js";
 
 const NewPostPage = ({navigation}) => {
     const [postText, setPostText] = useState('');
     
     const pushpost = () => {
         console.log('posttext: ', postText);
-        const reference = ref(db, 'post/');
-        push(reference, {
-            userid: 'uid1',
-            posttext: postText,
-            utc: Date.now(),
-            comments: {},
-            likes: 0,
-        });
+        Post.PushPost(postText);
         navigation.goBack();
     }
 

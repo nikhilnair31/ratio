@@ -21,17 +21,6 @@ const SearchPage = ({navigation}) => {
         // console.log('instagramURL: ', instagramURL); 
         // Linking.openURL(instagramURL); 
     }
-
-    // useLayoutEffect(() => {
-    //     const stackNavigator = navigation.getParent();
-    //     stackNavigator.setOptions({
-    //         title: 'search',
-    //         headerTintColor: 'white',
-    //         headerStyle: {
-    //             backgroundColor: 'black',
-    //         }      
-    //     });
-    // }, [navigation]);
     
     return (
         <KeyboardAvoidingView behaviour='padding' enabled style={styles.container} ref={viewRef}>

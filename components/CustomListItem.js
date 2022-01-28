@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Pressable } from 'react-native'
 import { ListItem, Text, Image } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Post from "../helpers/post.js";
 
-const CustomListItem = ({id, item}) => {
-    
-    const likePost = () => {
-        console.log('id: ', id);
-        Post.Likepost(id, item.likes+1);
+const CustomListItem = ({seeIndivPost, id, item}) => {
+    const [likedPost, setLikedPost] = useState(false);
+    const [likeColor, setLikeColor] = useState('white');
+
+    const likePost = async () => {
+        console.log('likePost id: ', id, '\n item.likes.amount: ', item.likes.amount);
+        if(!likedPost){
+            setLikedPost(true);
+            setLikeColor('#c23a5c');
+            Post.Likepost(id, item.likes.amount+1);
+        }
+        else {
+            setLikedPost(false);
+            setLikeColor('white');
+            Post.Likepost(id, item.likes.amount-1);
+        }
     }
     const commentPost = () => {
         // console.log('id: ', id);
@@ -46,11 +58,22 @@ const CustomListItem = ({id, item}) => {
         }
     }
 
+    useEffect(() => { 
+        Post.UserIdsThatLikedThePost(id).then(userIdsThatLikedThePost => {
+            console.log('userIdsThatLikedThePost ', userIdsThatLikedThePost);
+            if(userIdsThatLikedThePost){
+                console.log('curr user liked the post ', id);
+                setLikedPost(true);
+                setLikeColor('#c23a5c');
+            }
+        });
+    }, []);
+
     return (
-        <ListItem containerStyle={styles.lisItem}>
+        <ListItem button onPress={()=>seeIndivPost(id , item.posttext, item.displayname, item.utc)} containerStyle={styles.lisItem}>
             <ListItem.Content style={styles.lisItemContent}>
                 <ListItem.Content style={styles.lisItemContentUp}>
-                    <ListItem.Subtitle style={styles.lisItemUser}>{item.userid}</ListItem.Subtitle>
+                    <ListItem.Subtitle style={styles.lisItemUser}>{item.displayname}</ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.lisItemUser}> · </ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.lisItemTime}>{ timeDifference(item.utc) }</ListItem.Subtitle>
                 </ListItem.Content>
@@ -58,15 +81,12 @@ const CustomListItem = ({id, item}) => {
             </ListItem.Content>
 
             <Pressable style={styles.likebutton} onPress={likePost} android_ripple={{borderless: true, radius: 50}}>
-                <Image source={require('../assets/heart2.png')} style={styles.likebuttonimage}  />
-                <Text style={styles.likebuttontext}>{item.likes}</Text>
+                <Image source={require('../assets/heart2.png')} style={styles.likebuttonimage} tintColor={likeColor}/>
+                <Text style={styles.likebuttontext}>{item.likes.amount}</Text>
             </Pressable>
             <Pressable style={styles.commentbutton} onPress={commentPost} android_ripple={{borderless: true, radius: 50}}>
                 <Image source={require('../assets/talkey2.png')} style={styles.commentbuttonimage}  />
-                {
-                    item.comments!==undefined ? 
-                    <Text style={styles.commentbuttontext}>{item.comments.length}</Text> : <Text style={styles.commentbuttontext}>{0}</Text>
-                }
+                <Text style={styles.commentbuttontext}>{item.comments.amount}</Text>
             </Pressable>
         </ListItem>
     )
