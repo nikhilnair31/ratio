@@ -1,13 +1,15 @@
-import React, {useLayoutEffect, useEffect, useState} from 'react';
-import { Pressable, StyleSheet, View, KeyboardAvoidingView } from 'react-native';
-import { Avatar, Text, Input, Image } from 'react-native-elements';
+import React, {useEffect, useState } from 'react';
+import { Pressable, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { Text, Image } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import firebase from 'firebase/compat/app';
 
 const ProfilePage = ({navigation}) => {
-    const [photoURL, setPhotoURL] = useState('');
+    const [photoURL, setPhotoURL] = useState(null);
+    const [displayName, setDisplayName] = useState('');
 
     async function getLocalData (key) {
         try {
@@ -31,36 +33,33 @@ const ProfilePage = ({navigation}) => {
     }
 
     useEffect(() => {
-        getLocalData('@expo:photoURL')
-        .then( savedphotoURL =>{
-            if(savedphotoURL != null || savedphotoURL != undefined){
-                console.log('savedphotoURL: ', savedphotoURL);
-                setPhotoURL(savedphotoURL);
-            }
+        getLocalData('@expo:photoURL').then( savedphotoURL => {
+            console.log('savedphotoURL: ', savedphotoURL);
+            if(savedphotoURL != null || savedphotoURL != undefined) setPhotoURL(savedphotoURL);
+        });
+        getLocalData('@expo:displayName').then( saveddisplayName => {
+            console.log('saveddisplayName: ', saveddisplayName);
+            if(saveddisplayName != null || saveddisplayName != undefined) setDisplayName(saveddisplayName);
         });
     }, []);
-    useLayoutEffect(() => {
-        const stackNavigator = navigation.getParent();
-        stackNavigator.setOptions({
-            title: 'profile',
-            headerTintColor: 'white',
-            headerStyle: {
-                backgroundColor: 'black',
-            }   
-        });
-    }, [navigation]);
+    // useLayoutEffect(() => {
+    //     const stackNavigator = navigation.getParent();
+    //     stackNavigator.setOptions({
+    //         title: 'profile',
+    //     });
+    // }, [navigation]);
     
     return (
         <KeyboardAvoidingView behaviour='padding' enabled style={styles.container}>
-            <Avatar rounded source={{uri: photoURL}} />
-            <Text style={styles.titleText}>This is ProfilePage</Text>
+            {photoURL===null && <MaterialCommunityIcons name="account-circle" color='white' size={25}/>  }
+            {photoURL!==null && <Image style={styles.pfp} source={{uri: photoURL}} />}
+            <Text style={styles.titleText}>{displayName}</Text>
             <Pressable style={styles.button} onPress={()=>signOutAsync()}>
                 <Text style={styles.text}>Logout</Text>
             </Pressable>
         </KeyboardAvoidingView>
     );
 }
-
 export default ProfilePage
 
 const styles = StyleSheet.create({
@@ -70,15 +69,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    pfp: {
+        width: 150,
+        height: 150,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+    },
     titleText: {
-        fontSize: 16,
+        fontSize: 24,
         color: 'white',
+        margin: 10,
     },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
-        margin: 5,
+        margin: 10,
         borderRadius: 5,
         backgroundColor: 'transparent',
         borderColor: '#c23a5c', 

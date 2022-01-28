@@ -11,7 +11,7 @@
         - [x] Figure out how to avoid going to Github's OAuth screen every time user tries to login
         - [ ] Include Google sign in
     - [x] Add sign out button in profile page
-        - [ ] Also include the autheticated user's profile picture
+        - [x] Also include the autheticated user's profile picture
     - [ ] Add a system for keeping track of how many times a user's been ratio'd.
     - [ ] Once ratio limit hit then perma-ban account
     - [ ] Add screen for perma banned users trying to relogin

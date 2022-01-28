@@ -1,6 +1,6 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
-import { Share, TouchableOpacity, StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
-import { Avatar, Button, Text, Input, Image } from 'react-native-elements';
+import React, {useRef} from 'react';
+import { Share, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { Button, Text } from 'react-native-elements';
 import { captureRef } from 'react-native-view-shot';
 import * as Linking from 'expo-linking';
 
@@ -22,16 +22,16 @@ const SearchPage = ({navigation}) => {
         // Linking.openURL(instagramURL); 
     }
 
-    useLayoutEffect(() => {
-        const stackNavigator = navigation.getParent();
-        stackNavigator.setOptions({
-            title: 'search',
-            headerTintColor: 'white',
-            headerStyle: {
-                backgroundColor: 'black',
-            }      
-        });
-    }, [navigation]);
+    // useLayoutEffect(() => {
+    //     const stackNavigator = navigation.getParent();
+    //     stackNavigator.setOptions({
+    //         title: 'search',
+    //         headerTintColor: 'white',
+    //         headerStyle: {
+    //             backgroundColor: 'black',
+    //         }      
+    //     });
+    // }, [navigation]);
     
     return (
         <KeyboardAvoidingView behaviour='padding' enabled style={styles.container} ref={viewRef}>
@@ -40,7 +40,6 @@ const SearchPage = ({navigation}) => {
         </KeyboardAvoidingView>
     );
 }
-
 export default SearchPage
 
 const styles = StyleSheet.create({

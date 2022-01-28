@@ -1,8 +1,7 @@
 import React from 'react'
-import { StyleSheet, Pressable, TouchableOpacity, View } from 'react-native'
-import { ListItem, Text, Input, Image } from 'react-native-elements';
+import { StyleSheet, Pressable } from 'react-native'
+import { ListItem, Text, Image } from 'react-native-elements';
 import Post from "../helpers/post.js";
-import dayjs from "dayjs";
 
 const CustomListItem = ({id, item}) => {
     
@@ -57,10 +56,11 @@ const CustomListItem = ({id, item}) => {
                 </ListItem.Content>
                 <ListItem.Title numberOfLines={10} ellipsizeMode='tail' style={styles.lisItemPosttext}>{item.posttext}</ListItem.Title>
             </ListItem.Content>
-            <TouchableOpacity style={styles.likebutton} activeOpacity={0.5} onPress={likePost}>
-                <Image source={require('../assets/heart2.png')} style={styles.likebuttonimage} />
+
+            <Pressable style={styles.likebutton} onPress={likePost} android_ripple={{borderless: true, radius: 50}}>
+                <Image source={require('../assets/heart2.png')} style={styles.likebuttonimage}  />
                 <Text style={styles.likebuttontext}>{item.likes}</Text>
-            </TouchableOpacity>
+            </Pressable>
             <Pressable style={styles.commentbutton} onPress={commentPost} android_ripple={{borderless: true, radius: 50}}>
                 <Image source={require('../assets/talkey2.png')} style={styles.commentbuttonimage}  />
                 {
@@ -71,7 +71,6 @@ const CustomListItem = ({id, item}) => {
         </ListItem>
     )
 }
-
 export default CustomListItem
 
 const styles = StyleSheet.create({

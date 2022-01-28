@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import signInWithGitHub from '../helpers/github';
-import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import { GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
 import 'firebase/compat/firestore';
+import firebase from 'firebase/compat/app';
+import { GithubAuthProvider } from 'firebase/auth';
 
 const githubClientIdSecret = { id: '3f69d11b0a1b3b70c654', secret: '01eff770156512ddf124b8912479e267145970c6', };
 const githubScopeFields = [ 'user', 'public_repo' ];
@@ -80,7 +80,7 @@ const LoginPage = ({navigation}) => {
         savedisplayname = savedisplayname !== undefined ? savedisplayname : '';
         navigation.replace('HomePage', {
             screen: 'Home',
-            params: { dispname: savedisplayname, },
+            params: { saveddispname: savedisplayname, },
         })
     }
 
@@ -109,7 +109,6 @@ const LoginPage = ({navigation}) => {
         </KeyboardAvoidingView>
     );
 }
-
 export default LoginPage
 
 const styles = StyleSheet.create({

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { TouchableOpacity, StyleSheet, ScrollView, View, RefreshControl, Pressable } from 'react-native';
-import { Avatar, Text, Image } from 'react-native-elements';
-import { db, fdb } from "../helpers/firebase";
+import { StyleSheet, ScrollView, View, RefreshControl, Pressable } from 'react-native';
+import { Text, Image } from 'react-native-elements';
+import { db } from "../helpers/firebase";
 import { ref, onValue, child } from 'firebase/database';
 import CustomListItem from '../components/CustomListItem.js';
 
@@ -9,7 +9,7 @@ const HomePage = ({route, navigation}) => {
     const [posts, setPosts] = useState([]);
     const [postsLoading, setpostsLoading] = useState(false);
     const [refreshing, setRefreshing] = React.useState(false);
-    const { dispname } = route.params;
+    const { saveddispname } = route.params;
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -24,7 +24,6 @@ const HomePage = ({route, navigation}) => {
     }
 
     useEffect(() => { 
-        console.log('useEffect');
         console.log('posts.length: ', posts.length, '- postsLoading: ', postsLoading);
         if(posts.length <= 0 && !postsLoading){
             let lastKey;
@@ -52,23 +51,14 @@ const HomePage = ({route, navigation}) => {
         }
     }, [refreshing, postsLoading]);
     useLayoutEffect(() => {
-        console.log('dispname: ', JSON.stringify(dispname));
+        // console.log('saveddispname: ', JSON.stringify(saveddispname));
         const stackNavigator = navigation.getParent();
         stackNavigator.setOptions({
-            title: 'hey '+JSON.stringify(dispname).split(" ")[0].replace(/["']/g, "").toLowerCase(),
+            // title: 'hey '+JSON.stringify(saveddispname).split(" ")[0].replace(/["']/g, "").toLowerCase(),
             headerTintColor: 'white',
             headerStyle: {
                 backgroundColor: 'black',
-            },
-            // headerLeft: () => {
-            //     return (
-            //         <View style={{  marginLeft: 0}} >
-            //             <TouchableOpacity onPress={goToProfileTab} style={{ marginRight: 15 }}> 
-            //                 <Avatar rounded source={require('../assets/SilIcon5C_512.png')} />
-            //             </TouchableOpacity>
-            //         </View>
-            //     ) 
-            // }      
+            },     
         });
     }, [navigation]);
 
@@ -99,7 +89,6 @@ const HomePage = ({route, navigation}) => {
         );
     }
 }
-
 export default HomePage
 
 const styles = StyleSheet.create({
@@ -109,7 +98,6 @@ const styles = StyleSheet.create({
     },
     waitcontainer: {
         flex: 1,
-        display: 'flex',
         backgroundColor: 'black', 
         height: '100%',
         alignItems: 'center',
