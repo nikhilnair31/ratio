@@ -7,8 +7,9 @@ import localStorage from '../helpers/localStorage';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const IndivPostPage = ({route, navigation}) => {
-    const { postid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount } = route.params.params;
+    const { postitem, postid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount } = route.params.params;
     const [modalVisible, setModalVisible] = useState(false);
+    const [postIsDeleteableByCurrUser, setPostIsDeleteableByCurrUser] = useState(false);
     const [photoURL, setPhotoURL] = useState(null);
     const [likedPost, setLikedPost] = useState(false);
     const [likeColor, setLikeColor] = useState('white');
@@ -53,6 +54,7 @@ const IndivPostPage = ({route, navigation}) => {
             console.log('parsedjson.photoURL: ', parsedjson.photoURL);
             if(parsedjson != null || parsedjson != undefined){
                 setPhotoURL(parsedjson.photoURL);
+                postitem.uid===parsedjson.uid ? setPostIsDeleteableByCurrUser(true) : setPostIsDeleteableByCurrUser(false);
             }
         });
         Post.UserIdsThatLikedThePost(postid).then(userIdsThatLikedThePost => {
@@ -93,9 +95,12 @@ const IndivPostPage = ({route, navigation}) => {
             <View style={styles.uppercontainer}>
                 <Image source={require('../assets/heart2.png')} style={styles.pfpimage} />
                 <Text style={styles.displaynametext}>{postdisplayname}</Text>
-                <Pressable style={styles.deletebutton} onPress={deletePost} android_ripple={{borderless: true, radius: 50}}>
-                    <MaterialCommunityIcons name="delete" color='white' size={25} style={styles.deleteicon}/>
-                </Pressable>
+                {
+                    !postIsDeleteableByCurrUser && 
+                    <Pressable style={styles.deletebutton} onPress={deletePost} android_ripple={{borderless: true, radius: 50}}>
+                        <MaterialCommunityIcons name="delete" color='white' size={25} style={styles.deleteicon}/>
+                    </Pressable>
+                }
             </ View>
             <Text style={styles.posttext}>{posttext}</Text>
             <Text style={styles.timetext}>{utcToFormattedDate(postutc)}</Text>

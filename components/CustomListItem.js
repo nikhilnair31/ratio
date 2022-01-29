@@ -59,6 +59,7 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
     }
 
     useEffect(() => { 
+        console.log('item ', item);
         Post.UserIdsThatLikedThePost(id).then(userIdsThatLikedThePost => {
             console.log('userIdsThatLikedThePost ', userIdsThatLikedThePost);
             if(userIdsThatLikedThePost){
@@ -70,7 +71,7 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
     }, [refreshing]);
 
     return (
-        <ListItem button onPress={()=>seeIndivPost(id , item.posttext, item.displayname, item.utc, item.likes.amount, item.comments.amount)} containerStyle={styles.lisItem}>
+        <ListItem button onPress={()=>seeIndivPost(id , item)} containerStyle={styles.lisItem}>
             <ListItem.Content style={styles.lisItemContent}>
                 <ListItem.Content style={styles.lisItemContentUp}>
                     <ListItem.Subtitle style={styles.lisItemUser}>{item.displayname}</ListItem.Subtitle>
@@ -88,7 +89,7 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
                 <Image source={require('../assets/talkey2.png')} style={styles.commentbuttonimage}  />
                 <Text style={styles.commentbuttontext}>{item.comments.amount}</Text>
             </Pressable>
-            <Pressable style={styles.menubutton} onPress={()=>showMenuModal(id)} android_ripple={{borderless: true, radius: 50}}>
+            <Pressable style={styles.menubutton} onPress={()=>showMenuModal(id, item.userid)} android_ripple={{borderless: true, radius: 50}}>
                 <MaterialCommunityIcons name="dots-vertical" color='white' size={25} style={styles.deleteicon}/>
             </Pressable>
         </ListItem>

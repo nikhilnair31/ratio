@@ -48,22 +48,25 @@ export default {
     },
     GetPosts: async () => {
         try {
-            // let data;
-            // let lastKey;
-            let dataarr;
-            let posts = []
-
+            let lastKey;
             onValue(child(db, `post/`), (snapshot) => {
+                let dataArr = [];
                 const data = snapshot.val();
-                dataarr = Object.values(data)
-                dataarr.forEach((item) => {
-                    posts.push({ userid: item.userid, posttext: item.posttext, utc: item.utc });
-                    lastKey = item.utc;
-                });
-                // console.log('data: ', data);
-                // console.log('dataarr: ', dataarr);
-                // console.log('posts: ', posts);
-                return { posts };
+                console.log('data: ', data);
+                if(data !== null) {
+                    let dataValArr = Object.values(data)
+                    let dataKeyArr = Object.keys(data)
+                    for(var i=0; i<dataKeyArr.length; i++) {
+                        dataArr.push({ id: dataKeyArr[i], item: dataValArr[i] })
+                        lastKey = dataValArr[i].utc;
+                    }
+                    // console.log('dataKeyArr: ', dataKeyArr);
+                    // console.log('dataValArr: ', dataValArr);
+                    // console.log('dataArr: ', dataArr);
+                    dataArr.sort((a, b) => b.item.utc - a.item.utc)
+                    // console.log('dataArr: ', dataArr);
+                    return {dataArr}
+                }
             });
         } 
         catch (e) {

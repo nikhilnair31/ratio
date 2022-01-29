@@ -4,15 +4,16 @@ import { Text, Image } from 'react-native-elements';
 import { db } from "../helpers/firebase";
 import { ref, onValue, child } from 'firebase/database';
 import Post from "../helpers/post.js";
+import localStorage from '../helpers/localStorage';
 import CustomListItem from '../components/CustomListItem.js';
 
 const HomePage = ({route, navigation}) => {
     const [posts, setPosts] = useState([]);
-    const [postsLoading, setpostsLoading] = useState(false);
     const [postId, setPostId] = useState('');
+    const [postsLoading, setpostsLoading] = useState(false);
     const [refreshing, setRefreshing] = React.useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-    const { saveddispname } = route.params;
+    const [postIsDeleteableByCurrUser, setPostIsDeleteableByCurrUser] = useState(false);
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -22,7 +23,14 @@ const HomePage = ({route, navigation}) => {
         wait(2000).then(() => setRefreshing(false));
     }, []);
 
-    const showMenuModal = (gotpostid) => {
+    const showMenuModal = (gotpostid, posteruid) => {
+        localStorage.getLocalData('@expo:curruserdeets').then( curruserdeets => {
+            let parsedjson = JSON.parse(curruserdeets);
+            console.log('parsedjson.uid: ', parsedjson.uid, '\nposteruid: ', posteruid);
+            if(parsedjson != null || parsedjson != undefined) {
+                posteruid===parsedjson.uid ? setPostIsDeleteableByCurrUser(true) : setPostIsDeleteableByCurrUser(false);
+            }
+        });
         setModalVisible(!modalVisible);
         setPostId(gotpostid);
     }
@@ -33,16 +41,18 @@ const HomePage = ({route, navigation}) => {
     const makeNewPost = () => {
         navigation.push('NewPostPage')
     }
-    const seeIndivPost = (postid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount) => {
+    const seeIndivPost = (postid, postitem) => {
+        console.log('postitem: ', postitem);
         navigation.push('IndivPostPage', {
             screen: 'IndivPostPage',
             params: { 
                 postid: postid, 
-                posttext: posttext, 
-                postdisplayname: postdisplayname, 
-                postutc: postutc, 
-                postlikeamount: postlikeamount, 
-                postcommentamount: postcommentamount, 
+                postuid: postitem.uid, 
+                postdisplayname: postitem.displayName, 
+                posttext: postitem.posttext, 
+                postutc: postitem.utc, 
+                postlikeamount: postitem.likes.amount, 
+                postcommentamount: postitem.comments.amount, 
             },
         })
     }
@@ -51,24 +61,20 @@ const HomePage = ({route, navigation}) => {
         console.log('posts.length: ', posts.length, '- postsLoading: ', postsLoading, '- refreshing: ', refreshing);
         if((posts.length <= 0 && !postsLoading) || refreshing){
             console.log('refreshing');
-            let lastKey;
-            const dbRef = ref(db);
-            onValue(child(dbRef, `post/`), (snapshot) => {
+            // Post.GetPosts().then(dataArr => {
+            //     setPosts(dataArr);
+            //     setpostsLoading(true);
+            // });
+            onValue(child( ref(db), `post/`), (snapshot) => {
                 let dataArr = [];
                 const data = snapshot.val();
                 if(data !== null) {
-                    // console.log('data: ', data);
                     let dataValArr = Object.values(data)
                     let dataKeyArr = Object.keys(data)
                     for(var i=0; i<dataKeyArr.length; i++) {
                         dataArr.push({ id: dataKeyArr[i], item: dataValArr[i] })
-                        lastKey = dataValArr[i].utc;
                     }
-                    // console.log('dataKeyArr: ', dataKeyArr);
-                    // console.log('dataValArr: ', dataValArr);
-                    // console.log('dataArr: ', dataArr);
                     dataArr.sort((a, b) => b.item.utc - a.item.utc)
-                    // console.log('dataArr: ', dataArr);
                     setPosts(dataArr);
                     setpostsLoading(true);
                 }
@@ -103,9 +109,12 @@ const HomePage = ({route, navigation}) => {
                         <View style={styles.modalinnercontainer}>
                             <Text style={styles.modaltitletext}>What do you want to do?</Text>
                             <View style={styles.modalbuttoncontainer}>
-                                <Pressable style={[styles.modalbuttons, styles.confirmdeletebutton]} onPress={deleteSelectedPost} >
-                                    <Text style={styles.modalbuttontext}>Delete Post</Text>
-                                </Pressable>
+                                {
+                                    postIsDeleteableByCurrUser && 
+                                    <Pressable style={[styles.modalbuttons, styles.confirmdeletebutton]} onPress={deleteSelectedPost} >
+                                        <Text style={styles.modalbuttontext}>Delete Post</Text>
+                                    </Pressable>
+                                }
                                 <Pressable style={[styles.modalbuttons, styles.cancelbutton]} onPress={() => setModalVisible(!modalVisible)} >
                                     <Text style={styles.modalbuttontext}>Share</Text>
                                 </Pressable>
