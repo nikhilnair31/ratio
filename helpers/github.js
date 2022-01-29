@@ -1,6 +1,7 @@
 import * as AuthSession from 'expo-auth-session';
 import firebase from 'firebase/compat/app';
 import { GithubAuthProvider } from 'firebase/auth';
+import Post from "../helpers/post.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const useProxy = Platform.select({ web: false, default: true });
@@ -53,7 +54,7 @@ async function getGithubUserInfo (githubaccesstoken) {
     .then(response => response.json())
     .then(response => {
         const userResponse = response;
-        // console.log('userResponse: ', userResponse);
+        console.log('userResponse: ', userResponse);
         return userResponse;
     })
     .catch(error => {
@@ -73,19 +74,14 @@ async function githubSignIn(token, navigation) {
                 return;
             }
         }
-        console.log('githubSignIn tokey: ', token);
 
         const credential = GithubAuthProvider.credential(token);
-        console.log('githubSignIn credential: ', credential);
         const userCredential = await firebase.auth().signInWithCredential(credential);
-        console.log('githubSignIn userCredential.additionalUserInfo.profile.name: ', userCredential.additionalUserInfo.profile.name);
+        const userdeets = firebase.auth().currentUser;
 
-        const { providerId, uid, email, displayName, photoURL } = firebase.auth().currentUser;
-        console.log('githubSignIn providerId: ', providerId, '\nuid: ', uid, '\nemail: ', email, '\ndisplayName: ', displayName, '\nphotoURL: ', photoURL);
-        await AsyncStorage.setItem('@expo:displayName', displayName);
-        await AsyncStorage.setItem('@expo:uid', uid);
-        await AsyncStorage.setItem('@expo:photoURL', photoURL);
-        gotohome( displayName, navigation );
+        Post.AddUserData(userdeets);
+
+        gotohome( userdeets.displayName, navigation );
     } 
     catch ({ message }) {
         console.warn('message: ', message);

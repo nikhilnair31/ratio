@@ -1,30 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Pressable } from 'react-native'
 import { ListItem, Text, Image } from 'react-native-elements';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Post from "../helpers/post.js";
+import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const CustomListItem = ({seeIndivPost, id, item}) => {
+const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => {
     const [likedPost, setLikedPost] = useState(false);
     const [likeColor, setLikeColor] = useState('white');
 
-    const likePost = async () => {
-        console.log('likePost id: ', id, '\n item.likes.amount: ', item.likes.amount);
-        if(!likedPost){
-            setLikedPost(true);
-            setLikeColor('#c23a5c');
-            Post.Likepost(id, item.likes.amount+1);
-        }
-        else {
-            setLikedPost(false);
-            setLikeColor('white');
-            Post.Likepost(id, item.likes.amount-1);
-        }
-    }
-    const commentPost = () => {
-        // console.log('id: ', id);
-        // Post.Likepost(id, item.likes+1);
-    }
     const timeDifference = (utc) => {
         // dayjs(item.utc).format("YYYY-MM-DD")
         var msPerMinute = 60 * 1000;
@@ -57,6 +40,23 @@ const CustomListItem = ({seeIndivPost, id, item}) => {
             return Math.round(elapsed/msPerYear ) + ' year';   
         }
     }
+    const likePost = async () => {
+        console.log('likePost id: ', id, '\n item.likes.amount: ', item.likes.amount);
+        if(!likedPost){
+            setLikedPost(true);
+            setLikeColor('#c23a5c');
+            Post.Likepost(id, item.likes.amount+1);
+        }
+        else {
+            setLikedPost(false);
+            setLikeColor('white');
+            Post.Dislikepost(id, item.likes.amount-1);
+        }
+    }
+    const commentPost = () => {
+        // console.log('id: ', id);
+        // Post.Likepost(id, item.likes+1);
+    }
 
     useEffect(() => { 
         Post.UserIdsThatLikedThePost(id).then(userIdsThatLikedThePost => {
@@ -67,10 +67,10 @@ const CustomListItem = ({seeIndivPost, id, item}) => {
                 setLikeColor('#c23a5c');
             }
         });
-    }, []);
+    }, [refreshing]);
 
     return (
-        <ListItem button onPress={()=>seeIndivPost(id , item.posttext, item.displayname, item.utc)} containerStyle={styles.lisItem}>
+        <ListItem button onPress={()=>seeIndivPost(id , item.posttext, item.displayname, item.utc, item.likes.amount, item.comments.amount)} containerStyle={styles.lisItem}>
             <ListItem.Content style={styles.lisItemContent}>
                 <ListItem.Content style={styles.lisItemContentUp}>
                     <ListItem.Subtitle style={styles.lisItemUser}>{item.displayname}</ListItem.Subtitle>
@@ -87,6 +87,9 @@ const CustomListItem = ({seeIndivPost, id, item}) => {
             <Pressable style={styles.commentbutton} onPress={commentPost} android_ripple={{borderless: true, radius: 50}}>
                 <Image source={require('../assets/talkey2.png')} style={styles.commentbuttonimage}  />
                 <Text style={styles.commentbuttontext}>{item.comments.amount}</Text>
+            </Pressable>
+            <Pressable style={styles.menubutton} onPress={()=>showMenuModal(id)} android_ripple={{borderless: true, radius: 50}}>
+                <MaterialCommunityIcons name="dots-vertical" color='white' size={25} style={styles.deleteicon}/>
             </Pressable>
         </ListItem>
     )

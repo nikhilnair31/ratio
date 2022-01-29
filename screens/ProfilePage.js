@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
+import localStorage from '../helpers/localStorage';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import firebase from 'firebase/compat/app';
@@ -11,15 +12,6 @@ const ProfilePage = ({navigation}) => {
     const [photoURL, setPhotoURL] = useState(null);
     const [displayName, setDisplayName] = useState('');
 
-    async function getLocalData (key) {
-        try {
-            const value = await AsyncStorage.getItem(key);
-            console.log('getLocalData value: ', value);
-            if (value !== null) return value;
-        } catch (error) {
-            console.log('getLocalData error: ', error);
-        }
-    }
     async function signOutAsync() {
         try {
             await AsyncStorage.removeItem('@expo:GithubToken');
@@ -33,20 +25,19 @@ const ProfilePage = ({navigation}) => {
     }
 
     useEffect(() => {
-        getLocalData('@expo:photoURL').then( savedphotoURL => {
-            console.log('savedphotoURL: ', savedphotoURL);
-            if(savedphotoURL != null || savedphotoURL != undefined) setPhotoURL(savedphotoURL);
-        });
-        getLocalData('@expo:displayName').then( saveddisplayName => {
-            console.log('saveddisplayName: ', saveddisplayName);
-            if(saveddisplayName != null || saveddisplayName != undefined) setDisplayName(saveddisplayName);
+        localStorage.getLocalData('@expo:curruserdeets').then( curruserdeets => {
+            let parsedjson = JSON.parse(curruserdeets);
+            console.log('parsedjson: ', parsedjson);
+            if(parsedjson != null || parsedjson != undefined){
+                setPhotoURL(parsedjson.photoURL);
+                setDisplayName(parsedjson.displayName);
+            }
         });
     }, []);
     
     return (
         <KeyboardAvoidingView behaviour='padding' enabled style={styles.container}>
-            {photoURL===null && <MaterialCommunityIcons name="account-circle" color='white' size={25}/>  }
-            {photoURL!==null && <Image style={styles.pfp} source={{uri: photoURL}} />}
+            { photoURL===null ? <MaterialCommunityIcons name="account-circle" color='white' size={30} style={{marginEnd: 10}} /> : <Image style={styles.pfp} source={{uri: photoURL}} /> }
             <Text style={styles.titleText}>{displayName}</Text>
             <Pressable style={styles.button} onPress={()=>signOutAsync()}>
                 <Text style={styles.text}>Logout</Text>

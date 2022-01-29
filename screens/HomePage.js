@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { StyleSheet, ScrollView, View, RefreshControl, Pressable } from 'react-native';
+import { Modal, StyleSheet, ScrollView, View, RefreshControl, Pressable } from 'react-native';
 import { Text, Image } from 'react-native-elements';
 import { db } from "../helpers/firebase";
 import { ref, onValue, child } from 'firebase/database';
+import Post from "../helpers/post.js";
 import CustomListItem from '../components/CustomListItem.js';
 
 const HomePage = ({route, navigation}) => {
     const [posts, setPosts] = useState([]);
     const [postsLoading, setpostsLoading] = useState(false);
+    const [postId, setPostId] = useState('');
     const [refreshing, setRefreshing] = React.useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const { saveddispname } = route.params;
 
     const wait = (timeout) => {
@@ -19,14 +22,18 @@ const HomePage = ({route, navigation}) => {
         wait(2000).then(() => setRefreshing(false));
     }, []);
 
+    const showMenuModal = (gotpostid) => {
+        setModalVisible(!modalVisible);
+        setPostId(gotpostid);
+    }
+    const deleteSelectedPost = () => {
+        setModalVisible(!modalVisible);
+        Post.DeletePost(postId, null);
+    }
     const makeNewPost = () => {
         navigation.push('NewPostPage')
     }
-    const seeIndivPost = (postid, posttext, postdisplayname, postutc) => {
-        console.log('seeIndivPost postid: ', postid);
-        console.log('seeIndivPostposttext: ', posttext);
-        console.log('seeIndivPostpostdisplayname: ', postdisplayname);
-        console.log('seeIndivPostpostutc: ', postutc);
+    const seeIndivPost = (postid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount) => {
         navigation.push('IndivPostPage', {
             screen: 'IndivPostPage',
             params: { 
@@ -34,13 +41,16 @@ const HomePage = ({route, navigation}) => {
                 posttext: posttext, 
                 postdisplayname: postdisplayname, 
                 postutc: postutc, 
+                postlikeamount: postlikeamount, 
+                postcommentamount: postcommentamount, 
             },
         })
     }
 
     useEffect(() => { 
-        console.log('posts.length: ', posts.length, '- postsLoading: ', postsLoading);
-        if(posts.length <= 0 && !postsLoading){
+        console.log('posts.length: ', posts.length, '- postsLoading: ', postsLoading, '- refreshing: ', refreshing);
+        if((posts.length <= 0 && !postsLoading) || refreshing){
+            console.log('refreshing');
             let lastKey;
             const dbRef = ref(db);
             onValue(child(dbRef, `post/`), (snapshot) => {
@@ -80,7 +90,7 @@ const HomePage = ({route, navigation}) => {
             <View style={styles.waitcontainer}>
                 <Text style={styles.waitText}>Wait ✋</Text>
                 <Pressable style={styles.newpostbutton} onPress={makeNewPost}>
-                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='black'></Image>
+                    <Image source={require('../assets/Slap.png')} style={styles.newpostbuttonimage} tintColor='#c23a5c'></Image>
                 </Pressable>
             </View>
         );
@@ -88,10 +98,28 @@ const HomePage = ({route, navigation}) => {
     else if(posts.length > 0) {
         return (
             <View style={styles.maincontainer}>
+                <Modal animationType="fade" transparent={true} visible={modalVisible} statusBarTranslucent ={true} onRequestClose={() => setModalVisible(!modalVisible)} >
+                    <View style={styles.modalcentercontainer}>
+                        <View style={styles.modalinnercontainer}>
+                            <Text style={styles.modaltitletext}>What do you want to do?</Text>
+                            <View style={styles.modalbuttoncontainer}>
+                                <Pressable style={[styles.modalbuttons, styles.confirmdeletebutton]} onPress={deleteSelectedPost} >
+                                    <Text style={styles.modalbuttontext}>Delete Post</Text>
+                                </Pressable>
+                                <Pressable style={[styles.modalbuttons, styles.cancelbutton]} onPress={() => setModalVisible(!modalVisible)} >
+                                    <Text style={styles.modalbuttontext}>Share</Text>
+                                </Pressable>
+                                <Pressable style={[styles.modalbuttons, styles.cancelbutton]} onPress={() => setModalVisible(!modalVisible)} >
+                                    <Text style={styles.modalbuttontext}>Cancel</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
                 <ScrollView contentContainerStyle={styles.scrollView} style={styles.scrollContainer} refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} /> } >
                     {   
                         posts.map(({id, item}) => 
-                            <CustomListItem key={id} id={id} item={item} seeIndivPost={seeIndivPost}/>
+                            <CustomListItem key={id} id={id} item={item} seeIndivPost={seeIndivPost} showMenuModal={showMenuModal} refreshing={refreshing}/>
                         )
                     }
                 </ScrollView>
@@ -149,4 +177,46 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+
+    modalcentercontainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.9)",
+    },    
+    modalinnercontainer: {
+        paddingTop: 30,
+        paddingBottom: 30,
+        borderRadius: 10,
+        width: '50%',
+        backgroundColor: "#0f0f0f",
+        alignItems: "center",
+    },
+    modalbuttoncontainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    modalbuttons: {
+        width: 100,
+        padding: 15,
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    confirmdeletebutton: {
+        backgroundColor: "#c23a5c",
+    },
+    cancelbutton: {
+        backgroundColor: "white",
+    },
+    modalbuttontext: {
+        color: "black",
+        fontWeight: "bold",
+    },
+    modaltitletext: {
+        fontSize: 16,
+        marginBottom: 15,
+        color: "white",
+    }
 });

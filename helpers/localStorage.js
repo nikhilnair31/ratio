@@ -8,8 +8,10 @@ export default {
         try {
             const value = await AsyncStorage.getItem(key);
             console.log('getLocalData value: ', value);
-            if (value !== null) return value;
-        } catch (error) {
+            if (value !== null) 
+                return value;
+        } 
+        catch (error) {
             console.log('getLocalData error: ', error);
         }
     },
