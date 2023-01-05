@@ -26,7 +26,7 @@ const HomePage = ({route, navigation}) => {
     const showMenuModal = (gotpostid, posteruid) => {
         localStorage.getLocalData('@expo:curruserdeets').then( curruserdeets => {
             let parsedjson = JSON.parse(curruserdeets);
-            console.log('parsedjson.uid: ', parsedjson.uid, '\nposteruid: ', posteruid);
+            // console.log('showMenuModal parsedjson.uid: ', parsedjson.uid, '\nposteruid: ', posteruid);
             if(parsedjson != null || parsedjson != undefined) {
                 posteruid===parsedjson.uid ? setPostIsDeleteableByCurrUser(true) : setPostIsDeleteableByCurrUser(false);
             }
@@ -42,11 +42,12 @@ const HomePage = ({route, navigation}) => {
         navigation.push('NewPostPage')
     }
     const seeIndivPost = (postid, postitem) => {
-        console.log('postitem: ', postitem);
+        console.log('HomePage postitem: ', postitem);
         navigation.push('IndivPostPage', {
             screen: 'IndivPostPage',
             params: { 
                 postid: postid, 
+                postitem: postitem, 
                 postuid: postitem.uid, 
                 postdisplayname: postitem.displayName, 
                 posttext: postitem.posttext, 

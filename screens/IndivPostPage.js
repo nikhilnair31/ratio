@@ -5,12 +5,15 @@ import dayjs from "dayjs";
 import Post from "../helpers/post.js";
 import localStorage from '../helpers/localStorage';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
+import { db } from "../helpers/firebase";
+import { getDatabase, ref, onValue, set, setValue, push, update, child, get } from 'firebase/database';
 
 const IndivPostPage = ({route, navigation}) => {
-    const { postitem, postid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount } = route.params.params;
+    const { postitem, postid, postuid, posttext, postdisplayname, postutc, postlikeamount, postcommentamount } = route.params.params;
     const [modalVisible, setModalVisible] = useState(false);
     const [postIsDeleteableByCurrUser, setPostIsDeleteableByCurrUser] = useState(false);
-    const [photoURL, setPhotoURL] = useState(null);
+    const [currUserPhotoURL, setCurrUserPhotoURL] = useState(null);
+    const [posterUserPhotoURL, setPosterUserPhotoURL] = useState(null);
     const [likedPost, setLikedPost] = useState(false);
     const [likeColor, setLikeColor] = useState('white');
     const [currLikeAmount, setCurrLikeAmount] = useState(0);
@@ -47,13 +50,27 @@ const IndivPostPage = ({route, navigation}) => {
     }
     
     useEffect(() => {
+        // console.log('postitem: ', postitem);
         setCurrLikeAmount(postlikeamount);
         setCurrCommentAmount(postcommentamount);
+        // Post.GetUserData(postuid).then(userdata => {
+        //     console.log('IndivPostPage userdata ', userdata);
+        //     if(userdata)
+        //         setPosterUserPhotoURL(userdata.photoURL);
+        // });
+        //TODO: Replace with the async function from post.js
+        onValue(ref(db, `user/`+postuid), (snapshot) => {
+            const userdata = snapshot.val();
+            console.log('IndivPostPage data: ', userdata);
+            if(userdata !== null)
+                setPosterUserPhotoURL(userdata.photoURL);
+        });
         localStorage.getLocalData('@expo:curruserdeets').then( curruserdeets => {
             let parsedjson = JSON.parse(curruserdeets);
-            console.log('parsedjson.photoURL: ', parsedjson.photoURL);
+            // console.log('parsedjson.photoURL: ', parsedjson.photoURL);
             if(parsedjson != null || parsedjson != undefined){
-                setPhotoURL(parsedjson.photoURL);
+                setCurrUserPhotoURL(parsedjson.photoURL);
+                // console.log('postitem.uid: ', postitem.uid, ' | parsedjson.uid: ', parsedjson.uid);
                 postitem.uid===parsedjson.uid ? setPostIsDeleteableByCurrUser(true) : setPostIsDeleteableByCurrUser(false);
             }
         });
@@ -93,10 +110,10 @@ const IndivPostPage = ({route, navigation}) => {
                 </View>
             </Modal>
             <View style={styles.uppercontainer}>
-                <Image source={require('../assets/heart2.png')} style={styles.pfpimage} />
+                { posterUserPhotoURL===null ? <MaterialCommunityIcons name="account-circle" color='white' size={40} style={{marginEnd: 15, marginStart: 15,}} /> : <Image style={styles.posterpfpimage} source={{uri: posterUserPhotoURL}} />}
                 <Text style={styles.displaynametext}>{postdisplayname}</Text>
                 {
-                    !postIsDeleteableByCurrUser && 
+                    postIsDeleteableByCurrUser && 
                     <Pressable style={styles.deletebutton} onPress={deletePost} android_ripple={{borderless: true, radius: 50}}>
                         <MaterialCommunityIcons name="delete" color='white' size={25} style={styles.deleteicon}/>
                     </Pressable>
@@ -117,7 +134,7 @@ const IndivPostPage = ({route, navigation}) => {
             <View style={styles.replycontainer}>
                 <Input  style={styles.replyinput} placeholder="Comment" inputContainerStyle={{borderBottomWidth: 0}}
                     leftIcon={
-                        photoURL===null ? <MaterialCommunityIcons name="account-circle" color='white' size={30} style={{marginEnd: 10}} /> : <Image style={styles.curruserpfpimage} source={{uri: photoURL}} />
+                        currUserPhotoURL===null ? <MaterialCommunityIcons name="account-circle" color='white' size={30} style={{marginEnd: 10}} /> : <Image style={styles.curruserpfpimage} source={{uri: currUserPhotoURL}} />
                     } 
                     rightIcon={
                         <View style={{ marginLeft: 10 }} >
@@ -169,12 +186,12 @@ const styles = StyleSheet.create({
         paddingStart: 10,
     },
 
-    pfpimage: {
+    posterpfpimage: {
         padding: 20,
         marginTop: 10,
         marginBottom: 10,
         marginEnd: 15,
-        marginStart: 15,
+        marginStart: 20,
         height: 40,
         width: 40,
     },

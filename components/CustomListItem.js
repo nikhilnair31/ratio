@@ -59,11 +59,10 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
     }
 
     useEffect(() => { 
-        console.log('item ', item);
         Post.UserIdsThatLikedThePost(id).then(userIdsThatLikedThePost => {
-            console.log('userIdsThatLikedThePost ', userIdsThatLikedThePost);
+            // console.log('userIdsThatLikedThePost ', userIdsThatLikedThePost);
             if(userIdsThatLikedThePost){
-                console.log('curr user liked the post ', id);
+                // console.log('curr user liked the post ', id);
                 setLikedPost(true);
                 setLikeColor('#c23a5c');
             }
@@ -74,7 +73,7 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
         <ListItem button onPress={()=>seeIndivPost(id , item)} containerStyle={styles.lisItem}>
             <ListItem.Content style={styles.lisItemContent}>
                 <ListItem.Content style={styles.lisItemContentUp}>
-                    <ListItem.Subtitle style={styles.lisItemUser}>{item.displayname}</ListItem.Subtitle>
+                    <ListItem.Subtitle style={styles.lisItemUser}>{item.displayName}</ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.lisItemUser}> · </ListItem.Subtitle>
                     <ListItem.Subtitle style={styles.lisItemTime}>{ timeDifference(item.utc) }</ListItem.Subtitle>
                 </ListItem.Content>
@@ -89,7 +88,7 @@ const CustomListItem = ({refreshing, showMenuModal, seeIndivPost, id, item}) => 
                 <Image source={require('../assets/talkey2.png')} style={styles.commentbuttonimage}  />
                 <Text style={styles.commentbuttontext}>{item.comments.amount}</Text>
             </Pressable>
-            <Pressable style={styles.menubutton} onPress={()=>showMenuModal(id, item.userid)} android_ripple={{borderless: true, radius: 50}}>
+            <Pressable style={styles.menubutton} onPress={()=>showMenuModal(id, item.uid)} android_ripple={{borderless: true, radius: 50}}>
                 <MaterialCommunityIcons name="dots-vertical" color='white' size={25} style={styles.deleteicon}/>
             </Pressable>
         </ListItem>

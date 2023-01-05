@@ -13,6 +13,7 @@
     - [ ] Get like button to change color for specific post when moving from indivpostpage to homepage (without having to refresh)
     - [ ] Improve formatting of comment section in indiv post page
     - [ ] Add ability to include images in a post
+    - [x] Included the PFP of the poster user
     - [x] Add way to delete the post in indiv screen and homepage both with a popup if you are the poster
     - [x] When you like a post in indiv page and go back to homescreen the like amount updates but the icon color doesn't change
     - [x] Check why on liking apost the entire /uersid/ part is updated

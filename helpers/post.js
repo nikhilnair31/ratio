@@ -46,6 +46,24 @@ export default {
             console.log(e);
         }
     },
+    //TODO: Fix this async return and replace it in the useEffect for IndivPostPage
+    GetUserData: async (userid) => {
+        try {
+            let userdat;
+            onValue(ref(db, `user/`+userid), (snapshot) => {
+                const userdata = snapshot.val();
+                console.log('GetUserData data: ', userdata);
+                if(userdata !== null){
+                    userdat = userdata;
+                    return {userdat};
+                }
+            });
+            return {userdat};
+        } 
+        catch (e) {
+            console.log(e);
+        }
+    },
     GetPosts: async () => {
         try {
             let lastKey;
@@ -77,12 +95,12 @@ export default {
         try {
             const savedcurruserdeets = await AsyncStorage.getItem('@expo:curruserdeets');
             let parsedjson = JSON.parse(savedcurruserdeets);
-            console.log('parsedjson.uid: ', parsedjson.uid, '\nparsedjson.displayName: ', parsedjson.displayName);
+            console.log('PushPost parsedjson.uid: ', parsedjson.uid, '\nparsedjson.displayName: ', parsedjson.displayName);
 
             const pushref = ref(db, 'post/');
             push(pushref, {
-                userid: parsedjson.uid,
-                displayname: parsedjson.displayName,
+                uid: parsedjson.uid,
+                displayName: parsedjson.displayName,
                 posttext: posttext,
                 utc: Date.now(),
                 comments: {
@@ -103,14 +121,14 @@ export default {
         try {
             const savedcurruserdeets = await AsyncStorage.getItem('@expo:curruserdeets');
             let parsedjson = JSON.parse(savedcurruserdeets);
-            console.log('parsedjson.uid: ', parsedjson.uid);
+            console.log('UserIdsThatLikedThePost parsedjson.uid: ', parsedjson.uid);
 
             let useridsthatlikedthepost = []
             const dbRef = ref(db);
             onValue(child(dbRef, `post/`+postid+'/likes/userids/'), (snapshot) => {
                 let snapval = snapshot.val();
                 let arrayofobj = snapval!==null ? Object.values(snapval) : null;
-                useridsthatlikedthepost = arrayofobj!==null ? arrayofobj.map(function (el) { return el.userid; }) : null;
+                useridsthatlikedthepost = arrayofobj!==null ? arrayofobj.map(function (el) { return el.uid; }) : null;
                 return useridsthatlikedthepost;
             });
             
@@ -128,14 +146,14 @@ export default {
         try {
             const savedcurruserdeets = await AsyncStorage.getItem('@expo:curruserdeets');
             let parsedjson = JSON.parse(savedcurruserdeets);
-            console.log('parsedjson.uid: ', parsedjson.uid);
+            console.log('Likepost parsedjson.uid: ', parsedjson.uid);
 
             update( ref(db, 'post/'+postid+'/likes/') , {
                 amount: newlikeamount,
             });
         
             push( ref(db, 'post/'+postid+'/likes/userids/'), {
-                userid: parsedjson.uid,
+                uid: parsedjson.uid,
             });
         } 
         catch (e) {
@@ -146,7 +164,7 @@ export default {
         try {
             const savedcurruserdeets = await AsyncStorage.getItem('@expo:curruserdeets');
             let parsedjson = JSON.parse(savedcurruserdeets);
-            console.log('parsedjson.uid: ', parsedjson.uid);
+            console.log('Dislikepost parsedjson.uid: ', parsedjson.uid);
 
             update( ref(db, 'post/'+postid+'/likes/') , {
                 amount: newlikeamount,

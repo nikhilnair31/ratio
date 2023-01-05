@@ -33,7 +33,7 @@ const App = () => {
     async function getLocalData (key) {
         try {
             const value = await AsyncStorage.getItem(key);
-            console.log('getLocalData value: ', value);
+            // console.log('getLocalData value: ', value);
             if (value !== null) setSaveddisplayName(value);;
         } catch (error) {
             console.log('getLocalData error: ', error);
@@ -41,7 +41,7 @@ const App = () => {
     }
     function getHeaderTitle(route) {
         const routeName = getFocusedRouteNameFromRoute(route) ?? 'home';
-        console.log('routeName: ', routeName);
+        // console.log('routeName: ', routeName);
         getLocalData('@expo:displayName');
         switch (routeName) {
             case 'Profile': {

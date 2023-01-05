@@ -7,7 +7,7 @@ export default {
     getLocalData: async (key) => {
         try {
             const value = await AsyncStorage.getItem(key);
-            console.log('getLocalData value: ', value);
+            // console.log('getLocalData value: ', value);
             if (value !== null) 
                 return value;
         } 
